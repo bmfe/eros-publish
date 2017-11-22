@@ -1,6 +1,5 @@
 var mongoose = require("mongoose"),
     moment = require("moment")
-console.log(moment().format('YYYY-MM-DD h:m:s'))
 var modelSchema = new mongoose.Schema({
     appName: { type: String, require: true },
     jsPath: { type: String, require: true },

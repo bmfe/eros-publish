@@ -47,7 +47,6 @@ const requestZip = ({res, apps, appName, platform, version, jsVersion, isDiff}) 
     getNewestInfo({ appName, platform, version}).then(newests => {
         if (!newests || !newests.length) { return next(404) }
         if(isDiff == 0 || isDiff === 'false' || isDiff === false) {
-            console.log(isDiff)
             // 请求全量包
             res.send(format({
                 msg: "请求全量包成功",
@@ -58,7 +57,6 @@ const requestZip = ({res, apps, appName, platform, version, jsVersion, isDiff}) 
             }))             
             return
         }
-        console.log(isDiff)
         // 请求差分包
         if(!apps.length){
             // 不存在jsVersion 当前包信息可能被篡改 直接返回最新版本全量包
@@ -71,7 +69,6 @@ const requestZip = ({res, apps, appName, platform, version, jsVersion, isDiff}) 
                 }))                    
         }else {
             if(newests[0].jsVersion === jsVersion) {
-                console.log(newests)
                 // 存在 jsVersion 并且是最新
                 res.send(format({
                     msg: "当前版本已是最新，不需要更新"
