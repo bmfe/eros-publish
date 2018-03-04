@@ -3,7 +3,7 @@
 eros 构建 app 请求差分包更新的后端逻辑.
 
 ### 原理
-writing...
+[文档.](https://bmfe.github.io/eros-docs/#/zh-cn/advanced_diff)
 
 ### env
 首先请验证您的环境：
@@ -100,7 +100,7 @@ var modelSchema = new mongoose.Schema({
         * jsVersion: { type: **String**, require: **true**, desc: **"当前 bundle 的 md5 值"**}
 
 `/app/check`中 ios 和 android 二选一。
-        
+
 
 ### 部署
 请下载并使用 `pm2`。
