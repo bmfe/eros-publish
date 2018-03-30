@@ -3,6 +3,8 @@
 ## 开始之前
 本章内容会与开发者一起在`本地构建热更新服务`，开始本章内容前，请再次确保您已经运行起 eros 开发的整套流程，**如果需要构建到服务端/自动构建平台上，我们建议您先了解一些后端基础，在尝试构建 `热更新`**。
 
+## 原理
+[文档.](https://bmfe.github.io/eros-docs/#/zh-cn/advanced_diff)
 
 ## eros 为什么要做自己的热更新？
 如果您之前熟读了我们的[入门指南](https://bmfe.github.io/eros-docs/#/zh-cn/tutorial_newcomer)，大概就理解为什么 eros 要做`内置包热更新`，这里在列举一下。
@@ -117,7 +119,6 @@ $ supervisor app.js
         * jsVersion: { type: **String**, require: **true**, desc: **"当前 bundle 的 md5 值"**}
 
 `/app/check`中 ios 和 android 二选一。
-
 
 ### 修改模板配置
 1. 这里我们重新生成了一个名叫 eros-demo 的默认项目，在本地 `/Users/yangmingzhe/Work/opensource/` 绝对路径下，注意这个就是我上面填写的 `staticRealPath`。
