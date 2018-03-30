@@ -1,6 +1,7 @@
 var AppModel =  require("../models/app"),
     format =  require("../utils/tool").format,
-    md5 = require('js-md5')
+    md5 = require('js-md5'),
+    config = require('../config')
 
 
 const add = (req, res, next) => {
@@ -8,7 +9,7 @@ const add = (req, res, next) => {
 
     appInfo.save(() => {
         res.send(format({
-            resData: 'success'
+            data: 'success'
         }))            
     })
 }
@@ -20,7 +21,7 @@ const list = (req, res, next) => {
         if (err) { return next(err) }
         if (!app) { return next(404) }
         res.send(format({
-            resData: app
+            data: app
         }))
     })
 }
@@ -32,27 +33,46 @@ const check = (req, res, next) => {
         checkParams = {
             appName,
         }
-
     if(jsVersion) checkParams['jsVersion'] = jsVersion
     checkParams[platform] = version
     AppModel.find(checkParams, (err, apps) =>{
         if (err) { return next(err) }
         requestZip({
-            res, apps, appName, platform, version, jsVersion, isDiff
+            res, apps, appName, platform, version, jsVersion, isDiff, next
         })
     })
 }
 
-const requestZip = ({res, apps, appName, platform, version, jsVersion, isDiff}) => {
+const requestZip = ({res, apps, appName, platform, version, jsVersion, isDiff, next}) => {
+    if(!appName || !platform || !version) {
+        res.send(format({
+            resCode: 400,
+            msg: "参数缺失",
+            data: {}
+        }))   
+        return         
+    }
     getNewestInfo({ appName, platform, version}).then(newests => {
-        if (!newests || !newests.length) { return next(404) }
+        // console.log(newests)
+        if (!newests || !newests.length) { 
+            res.send(format({
+                resCode: 400,
+                msg: "无任何包信息",
+                data: {}
+            }))             
+            return 
+        }
+
+        const fullZipPath = `${newests[0].jsPath}${newests[0].jsVersion}.zip`
+        const diffZipPath = `${newests[0].jsPath}${md5(jsVersion + newests[0].jsVersion)}.zip`
+
         if(isDiff == 0 || isDiff === 'false' || isDiff === false) {
             // 请求全量包
             res.send(format({
                 msg: "请求全量包成功",
-                resData: {
-                    isDiff: false,
-                    jsPath: `${newests[0].jsPath}${newests[0].jsVersion}.zip`
+                data: {
+                    diff: false,
+                    path: fullZipPath
                 }
             }))             
             return
@@ -61,26 +81,29 @@ const requestZip = ({res, apps, appName, platform, version, jsVersion, isDiff}) 
         if(!apps.length){
             // 不存在jsVersion 当前包信息可能被篡改 直接返回最新版本全量包
                 res.send(format({
+                    resCode:  401,
                     msg: "jsVersion 不存在",
-                    resData: {
-                        isDiff: false,
-                        jsPath: `${newests[0].jsPath}${newests[0].jsVersion}.zip`
+                    data: {
+                        diff: false,
+                        path: fullZipPath
                     }
                 }))                    
         }else {
             if(newests[0].jsVersion === jsVersion) {
                 // 存在 jsVersion 并且是最新
                 res.send(format({
+                    resCode: 4000,
                     msg: "当前版本已是最新，不需要更新"
                 }))                 
             } else {
                 // 存在 jsVersion 但不是最新
                 res.send(format({
                     msg: "当前版本需要更新",
-                    resData: {
-                        isDiff: true,
+                    data: {
+                        diff: true,
                         jsVersion: newests[0].jsVersion,
-                        jsPath: `${newests[0].jsPath}${md5(jsVersion + newests[0].jsVersion)}.zip`
+                        // path: `${newests[0].jsPath}${md5(jsVersion + newests[0].jsVersion)}.zip`
+                        path: config.zipReturn === 'diff' ? diffZipPath : fullZipPath
                     }
                 }))                 
             }
