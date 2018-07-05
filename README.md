@@ -36,6 +36,8 @@
 - mongoDB > v3.4.9
 
 ### 工具
+
+- bsdiff/bspatch 需要在目标服务器或者本地开发时安装。
 - supervisor 开发
 - pm2 部署
 - Robo 3T (mongoDB 可视化工具)
