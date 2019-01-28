@@ -1,0 +1,18 @@
+version: "3"
+services:
+  eros-publish:
+    image: eros-publish
+    restart: always
+    build: .
+    container_name: eros-publish
+    depends_on:
+    - mongo
+    ports:
+    - 3008:3001
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+    - ./datadir:/data/db
+    - ./static:/home/Service/static
+    container_name: eros-publish-mongo
